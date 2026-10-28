@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { apiGet, apiPost } from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import LocationPicker from "../components/LocationPicker";
 
 function ReportsPage() {
   const { user, logout } = useAuth();
@@ -13,6 +14,7 @@ function ReportsPage() {
   const [productName, setProductName] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
+  const [position, setPosition] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -43,17 +45,24 @@ function ReportsPage() {
     setFormError("");
     setSuccess(false);
 
+    const body = {
+      product_name_text: productName,
+      description,
+      location,
+    };
+    if (position) {
+      body.latitude = position.lat;
+      body.longitude = position.lng;
+    }
+
     try {
-      const { ok, status, data } = await apiPost("/reports", {
-        product_name_text: productName,
-        description,
-        location,
-      });
+      const { ok, status, data } = await apiPost("/reports", body);
 
       if (ok) {
         setProductName("");
         setDescription("");
         setLocation("");
+        setPosition(null);
         setSuccess(true);
         loadReports();
       } else if (status === 401 || status === 422) {
@@ -101,11 +110,19 @@ function ReportsPage() {
               rows={4}
               className={inputClass}
             />
+
+            <div>
+              <p className="mb-1 text-sm font-medium text-gray-700">
+                Where did you see it? (optional)
+              </p>
+              <LocationPicker value={position} onChange={setPosition} />
+            </div>
+
             <input
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Location (e.g. Nairobi CBD, River Road)"
+              placeholder="Place name or landmark (e.g. next to Naivas, Rongai)"
               className={inputClass}
             />
 
@@ -170,6 +187,7 @@ function ReportsPage() {
             <p className="mt-2 text-sm text-gray-700">{report.description}</p>
             <p className="mt-2 text-xs text-gray-500">
               {report.location ? `${report.location} · ` : ""}
+              {report.latitude != null ? "Pinned on map · " : ""}
               {report.created_at
                 ? new Date(report.created_at).toLocaleDateString()
                 : ""}
