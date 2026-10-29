@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import SearchPage from "./pages/SearchPage";
 import VerifyPage from "./pages/VerifyPage";
 import ReportsPage from "./pages/ReportsPage";
+import ReviewPage from "./pages/ReviewPage";
 import LoginPage from "./pages/LoginPage";
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<SearchPage />} />
         <Route path="/verify" element={<VerifyPage />} />
         <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/review" element={<ReviewPage />} />
         <Route path="/login" element={<LoginPage />} />
       </Routes>
     </div>

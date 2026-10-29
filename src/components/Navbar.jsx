@@ -17,6 +17,9 @@ function Navbar() {
           <NavLink to="/" end className={linkClass}>Search</NavLink>
           <NavLink to="/verify" className={linkClass}>Verify</NavLink>
           <NavLink to="/reports" className={linkClass}>Reports</NavLink>
+          {user?.role === "admin" && (
+            <NavLink to="/review" className={linkClass}>Review</NavLink>
+          )}
           {user ? (
             <button
               onClick={logout}
